@@ -143,5 +143,5 @@ if __name__ == '__main__':
         l = emb.predict(u)
         # rerank
         l.reverse()
-        assert(emb.rerank(u, l)==l)
+        assert(emb.rerank(u, l)==emb.predict(u))
     main()
