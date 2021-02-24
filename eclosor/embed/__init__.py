@@ -110,12 +110,16 @@ class EmbedRecommender:
             self._uid2uno = { id : no for no, id in enumerate(self._uno2uid) }
 
     def predict(self, user_id, limit=10):
+        if user_id not in self._uid2uno:
+            return []
         cos = self._e_s @ self._e_u[self._uid2uno[user_id]].T
         return [self._sno2sid[no] for no in np.argsort(cos)[:-limit:-1]]
 
     def rerank(self, user_id, item_ids, limit=10):
+        if user_id not in self._uid2uno:
+            return item_ids
         e_u = self._e_u[self._uid2uno[user_id]].T
-        cos = [self._e_s[self._sid2sno[id]] @ e_u for id in item_ids]
+        cos = [self._e_s[self._sid2sno.get(id, 0)] @ e_u for id in item_ids]
         return [item_ids[i] for i in np.argsort(cos)[:-limit:-1]]
 
 if __name__ == '__main__':
