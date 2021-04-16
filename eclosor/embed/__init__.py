@@ -122,6 +122,9 @@ class EmbedRecommender:
         cos = [self._e_s[self._sid2sno.get(id, 0)] @ e_u for id in item_ids]
         return [item_ids[i] for i in np.argsort(cos)[:-(limit+1):-1]]
 
+    def is_known_user(self, user_id):
+        return user_id in self._uid2uno
+
 if __name__ == '__main__':
     import click
     import pyarrow as pa
