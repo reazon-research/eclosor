@@ -122,6 +122,16 @@ class EmbedRecommender:
         cos = [self._e_s[self._sid2sno.get(id, 0)] @ e_u for id in item_ids]
         return [item_ids[i] for i in np.argsort(cos)[:-(limit+1):-1]]
 
+    def rerank_with_score(self, user_id, item_ids, limit=10, score_threshold=0):
+        if user_id not in self._uid2uno:
+            return item_ids
+        e_u = self._e_u[self._uid2uno[user_id]].T
+        cos = [(self._e_s[self._sid2sno.get(id, 0)] @ e_u, id) for id in item_ids]
+        res = [(score, id) for score, id in cos if score >= score_threshold]
+        res.sort(reverse=True)
+        scores, ids = zip(*res[:limit])
+        return ids, scores
+
     def is_known_user(self, user_id):
         return user_id in self._uid2uno
 
