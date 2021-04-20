@@ -126,8 +126,8 @@ class EmbedRecommender:
         if user_id not in self._uid2uno:
             return item_ids
         e_u = self._e_u[self._uid2uno[user_id]].T
-        cos = [(self._e_s[self._sid2sno.get(id, 0)] @ e_u, id) for id in item_ids]
-        res = [(score, id) for score, id in cos if score >= score_threshold]
+        res = [(self._e_s[self._sid2sno.get(id, 0)] @ e_u, id) for id in item_ids]
+        res = [(cos, id) for cos, id in res if cos >= score_threshold]
         res.sort(reverse=True)
         scores, ids = zip(*res[:limit])
         return ids, scores
