@@ -129,7 +129,8 @@ class EmbedRecommender:
         res = [(self._e_s[self._sid2sno.get(id, 0)] @ e_u, id) for id in item_ids]
         res = [(cos, id) for cos, id in res if cos >= score_threshold]
         res.sort(reverse=True)
-        scores, ids = zip(*res[:limit])
+        ids = [id for cos, id in res[:limit]]
+        scores = [score for cos, id in res[:limit]]
         return ids, scores
 
     def is_known_user(self, user_id):
