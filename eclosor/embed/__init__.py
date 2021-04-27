@@ -124,7 +124,7 @@ class EmbedRecommender:
 
     def rerank_with_score(self, user_id, item_ids, limit=10, score_threshold=0):
         if user_id not in self._uid2uno:
-            return item_ids
+            return item_ids, [0.0] * len(item_ids)
         e_u = self._e_u[self._uid2uno[user_id]].T
         res = [(self._e_s[self._sid2sno.get(id, 0)] @ e_u, id) for id in item_ids]
         res = [(cos, id) for cos, id in res if cos >= score_threshold]
