@@ -57,7 +57,6 @@ try:
             self.eval()
             with torch.no_grad():
                 torch.save(self.state_dict(), model_file)
-                logging.info('saved:%s', model_file)
 
         def load(self, model_file):
             self.load_state_dict(torch.load(model_file))
@@ -91,7 +90,6 @@ class GMFRecommender:
                 distance_bias = self.model.distance_filter[0].bias.cpu().detach().numpy()[0]
             )
             pickle.dump(self.params, open(model_file + '.pkl', 'wb'))
-            logging.info('saved:%s', model_file + '.pkl')
 
     def load(self, model_file):
         self.params = pickle.load(open(model_file + '.pkl', 'rb'))
