@@ -9,14 +9,14 @@ try:
                      embedding_dim, hidden_layer_dim, time_emb_dim):
             super(GMFTModel, self).__init__()
             self.item_coordinates = item_coordinates
-            self.coordinates = torch.FloatTensor(item_coordinates).unsqueeze(0).cuda()
+            self.coordinates = item_coordinates.unsqueeze(0)
             self.item_emb = nn.Embedding(len(item_common_features), embedding_dim, max_norm=1.)
             nn.init.uniform_(self.item_emb.weight, a=-1.0, b=1.0)
             self.user_emb = nn.Embedding(len(user_common_features), embedding_dim, max_norm=1.)
             nn.init.uniform_(self.user_emb.weight, a=-1.0, b=1.0)
             self.embedding_dim = embedding_dim
-            self.item_features = torch.FloatTensor(item_common_features).cuda()
-            self.user_features = torch.FloatTensor(user_common_features).cuda()
+            self.item_features = item_common_features
+            self.user_features = user_common_features
             self.distance_filter = nn.Sequential(
                 nn.Linear(1, 1),
                 nn.Sigmoid(),
