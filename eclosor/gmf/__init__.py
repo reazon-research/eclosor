@@ -32,7 +32,7 @@ try:
             )
             self.time_emb = nn.Embedding(item_temporal_features.shape[1], time_emb_dim, max_norm=1.)
             nn.init.uniform_(self.time_emb.weight, a=-1.0, b=1.0)
-            self.item_temporal_features = nn.Embedding.from_pretrained(torch.FloatTensor(item_temporal_features))
+            self.item_temporal_features = nn.Embedding.from_pretrained(item_temporal_features)
 
         def merged_item_features(self):
             return torch.cat([self.item_emb.weight,
