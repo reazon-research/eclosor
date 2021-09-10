@@ -9,7 +9,6 @@ try:
                      embedding_dim, hidden_layer_dim, time_emb_dim):
             super(GMFTModel, self).__init__()
             self.item_coordinates = item_coordinates
-            self.coordinates = item_coordinates.unsqueeze(0)
             self.item_emb = nn.Embedding(len(item_common_features), embedding_dim, max_norm=1.)
             nn.init.uniform_(self.item_emb.weight, a=-1.0, b=1.0)
             self.user_emb = nn.Embedding(len(user_common_features), embedding_dim, max_norm=1.)
@@ -46,7 +45,7 @@ try:
 
         def forward(self, x):
             user, coordinate, time = x
-            distance = torch.linalg.norm(self.coordinates - coordinate.view(-1, 1, 2), dim=2)
+            distance = torch.linalg.norm(self.item_coordinates.unsqueeze(0) - coordinate.view(-1, 1, 2), dim=2)
             distance = distance.unsqueeze(2)
             distance = self.distance_filter(distance)
             distance = distance.squeeze(2)
@@ -82,7 +81,7 @@ class GMFRecommender:
             self.params = dict(
                 items = self.items,
                 users = self.users,
-                item_coordinates = self.model.item_coordinates,
+                item_coordinates = self.model.item_coordinates.cpu().detach().numpy(),
                 item_feature = self.model.merged_item_features().cpu().detach().numpy(),
                 user_feature = torch.cat([self.model.user_emb.weight, self.model.mlp(self.model.user_features)], 1).cpu().detach().numpy(),
                 time_emb = self.model.time_emb.weight.cpu().detach().numpy(),
