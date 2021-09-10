@@ -91,7 +91,6 @@ class GMFRecommender:
             pickle.dump(self.params, open(os.path.join(data_directory, 'embed.npz'), 'wb'))
 
     def load_model(self, data_directory):
-        with np.load(os.path.join(data_directory, 'embed.npz')) as npz:
         self.params = pickle.load(open(os.path.join(data_directory, 'embed.npz'), 'rb'))
         self.items = self.params['items']
         self.users = self.params['users']
