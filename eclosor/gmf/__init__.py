@@ -139,8 +139,13 @@ class GMFRecommender:
         items = self._item_numbers(item_ids)
         score = self._feature_score(user, time, items) * self._distance_score(coordinate, items)
         order = np.argsort(score)[:-(limit+1):-1]
-        scores = [score[i] for i in order]
-        ids = [item_ids[i] for i in order]
+        scores = []
+        ids = []
+        for i in order:
+            if score[i] < score_threshold:
+                break
+            scores.append(score[i])
+            ids.append(item_ids[i])
         return ids, scores
 
     def is_known_user(self, user_id):
