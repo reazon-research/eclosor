@@ -118,26 +118,35 @@ class GMFRecommender:
         distance = distance * self.params['distance_weight'] + self.params['distance_bias']
         return 1/(1 + np.exp(-distance))
 
-    def predict(self, user_id, coordinate, time, limit=10):
+    def predict(self, user_id, coordinate, time, limit=10, with_distance_score=True):
         user = self._user_number(user_id)
-        score = self._feature_score(user, time) * self._distance_score(coordinate)
+        score = self._feature_score(user, time)
+        if with_distance_score:
+            score *= self._distance_score(coordinate)
         return [self.items[no] for no in np.argsort(score)[:-(limit+1):-1]]
 
-    def rerank(self, user_id, coordinate, time, item_ids, limit=10):
+    def rerank(self, user_id, coordinate, time, item_ids, limit=10, with_distance_score=True):
         user = self._user_number(user_id)
         items = self._item_numbers(item_ids)
-        score = self._feature_score(user, time, items) * self._distance_score(coordinate, items)
+        score = self._feature_score(user, time, items)
+        if with_distance_score:
+            score *= self._distance_score(coordinate, items)
         return [item_ids[i] for i in np.argsort(score)[:-(limit+1):-1]]
 
-    def get_scores(self, user_id, coordinate, time, item_ids):
+    def get_scores(self, user_id, coordinate, time, item_ids, with_distance_score=True):
         user = self._user_number(user_id)
         items = self._item_numbers(item_ids)
-        return self._feature_score(user, time, items) * self._distance_score(coordinate, items)
+        score = self._feature_score(user, time, items)
+        if with_distance_score:
+            score *= self._distance_score(coordinate, items)
+        return score
 
-    def rerank_with_score(self, user_id, coordinate, time, item_ids, limit=10, score_threshold=0):
+    def rerank_with_score(self, user_id, coordinate, time, item_ids, limit=10, score_threshold=0, with_distance_score=True):
         user = self._user_number(user_id)
         items = self._item_numbers(item_ids)
-        score = self._feature_score(user, time, items) * self._distance_score(coordinate, items)
+        score = self._feature_score(user, time, items)
+        if with_distance_score:
+            score *= self._distance_score(coordinate, items)
         order = np.argsort(score)[:-(limit+1):-1]
         scores = []
         ids = []
