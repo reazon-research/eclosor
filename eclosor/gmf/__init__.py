@@ -6,7 +6,7 @@ try:
     import torch.nn as nn
     class GMFTModel(nn.Module):
         def __init__(self, user_common_features, item_common_features, item_coordinates, item_temporal_features,
-                     embedding_dim, hidden_layer_dim, time_emb_dim):
+                     dropout_p, embedding_dim, hidden_layer_dim, time_emb_dim):
             super(GMFTModel, self).__init__()
             self.item_coordinates = item_coordinates
             self.item_emb = nn.Embedding(len(item_common_features), embedding_dim, max_norm=1.)
@@ -22,9 +22,11 @@ try:
             )
             self.mlp = nn.Sequential(
                 nn.Linear(item_common_features.shape[1], hidden_layer_dim),
+                nn.Dropout(p=dropout_p),
                 nn.BatchNorm1d(hidden_layer_dim),
                 nn.ReLU(inplace=True),
                 nn.Linear(hidden_layer_dim, hidden_layer_dim>>1),
+                nn.Dropout(p=dropout_p),
                 nn.BatchNorm1d(hidden_layer_dim>>1),
                 nn.ReLU(inplace=True),
                 nn.Linear(hidden_layer_dim>>1, hidden_layer_dim>>2),
@@ -69,12 +71,12 @@ class GMFRecommender:
         self.nusers = len(self.users)
 
     def init_model(self, users, items, user_common_features, item_common_features, item_coordinates, item_temporal_features,
-                   embedding_dim=64, hidden_layer_dim=32, time_emb_dim=4):
+                   embedding_dim=64, hidden_layer_dim=32, time_emb_dim=4, dropout_p=0.0):
         self.items = items
         self.users = users
         self._update_dicts()
         self.model = GMFTModel(user_common_features, item_common_features, item_coordinates, item_temporal_features,
-                               embedding_dim, hidden_layer_dim, time_emb_dim)
+                               dropout_p, embedding_dim, hidden_layer_dim, time_emb_dim)
     def save_model(self, data_directory):
         self.model.eval()
         with torch.no_grad():
