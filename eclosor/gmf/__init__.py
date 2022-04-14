@@ -77,7 +77,7 @@ class GMFRecommender:
         self._update_dicts()
         self.model = GMFTModel(user_common_features, item_common_features, item_coordinates, item_temporal_features,
                                dropout_p, embedding_dim, hidden_layer_dim, time_emb_dim)
-    def save_model(self, data_directory, **args):
+    def save_model(self, data_directory, filename='embed.npz', **args):
         self.model.eval()
         with torch.no_grad():
             self.params = dict(
@@ -91,10 +91,10 @@ class GMFRecommender:
                 distance_bias = self.model.distance_filter[0].bias.cpu().detach().numpy()[0]
             )
             self.params.update(args)
-            pickle.dump(self.params, open(os.path.join(data_directory, 'embed.npz'), 'wb'))
+            pickle.dump(self.params, open(os.path.join(data_directory, filename), 'wb'))
 
-    def load_model(self, data_directory):
-        self.params = pickle.load(open(os.path.join(data_directory, 'embed.npz'), 'rb'))
+    def load_model(self, data_directory, filename='embed.npz'):
+        self.params = pickle.load(open(os.path.join(data_directory, filename), 'rb'))
         self.items = self.params['items']
         self.users = self.params['users']
         self._update_dicts()
